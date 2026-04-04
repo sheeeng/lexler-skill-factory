@@ -23,6 +23,7 @@ skill-factory/
 │   │       ├── references/             # JSON schemas for evals, grading, benchmarks
 │   │       └── assets/                 # HTML templates for trigger eval review
 │   ├── create_new_skill-process.md     # Instructions for creating skills
+│   ├── create_evals-process.md        # Instructions for evaluating skills
 │   ├── map.md                          # This file - repository structure
 │   └── project.md                      # Project-specific information
 └── output_skills/                      # Created skills organized by category

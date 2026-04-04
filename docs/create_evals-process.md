@@ -1,0 +1,176 @@
+# Create Evals for a Skill
+
+STARTER_CHARACTER = 🧪
+
+## Description
+
+Evaluate a Claude Code skill's quality by running it against test prompts and measuring results. Uses Anthropic's skill-creator infrastructure from `docs/knowledge/anthropic-skill-creator/`.
+
+This process covers two types of evaluation:
+- Quality evals: Does Claude follow the skill's instructions and produce good output?
+- Trigger evals: Does the skill activate when it should and stay quiet when it shouldn't?
+
+## Prerequisites
+
+Run `./update-docs` to fetch the latest skill-creator infrastructure. The eval scripts, grader agents, and HTML viewer all live in `docs/knowledge/anthropic-skill-creator/`.
+
+## Steps
+
+### 1. Write Test Prompts
+
+Write 2-3 realistic test prompts — the kind of thing a real user would actually say when they need this skill. Not abstract descriptions, but concrete requests with context, file names, specifics.
+
+Bad: `"Process this data"`
+Good: `"I have a CSV in ~/reports/q4-sales.csv with columns for region, revenue, and headcount. Can you add a profit-margin percentage column?"`
+
+Save to `evals/evals.json` inside the skill directory:
+
+```json
+{
+  "skill_name": "skill-name-here",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "The realistic user prompt",
+      "expected_output": "Plain description of what success looks like",
+      "files": []
+    }
+  ]
+}
+```
+
+If the skill needs input files for testing, place them in `evals/files/` and reference them in the `files` array.
+
+Schema reference: `docs/knowledge/anthropic-skill-creator/references/schemas.md`
+
+### 2. Draft Assertions
+
+For each test prompt, write assertions — verifiable statements about what the output should contain or how Claude should behave. Add them to the `expectations` array in `evals/evals.json`.
+
+Think about assertions in these categories:
+
+- Correctness: Does the output contain the right information? ("The summary includes all three key findings from the source document")
+- Completeness: Is anything missing? ("Every section from the template appears in the output")
+- Format: Does the output match the expected shape? ("The output is a valid JSON file with a 'results' array")
+- Behavior: Did Claude follow the skill's workflow? ("The skill's validation script was executed before producing final output")
+
+Write assertions that are hard to satisfy without actually doing the work correctly. An assertion like "output file exists" is too weak — a wrong file still passes. Better: "output file contains column headers matching the input schema."
+
+The grader agent will also critique weak assertions and suggest improvements, so the first draft doesn't need to be perfect.
+
+### 3. Run Quality Evals
+
+For each test prompt, spawn two subagents in the same turn:
+
+**With-skill run**: Claude has access to the skill and executes the test prompt. Save outputs to `{skill-name}-workspace/iteration-1/eval-{ID}/with_skill/outputs/`.
+
+**Baseline run**: Same prompt, no skill loaded. Save to `{skill-name}-workspace/iteration-1/eval-{ID}/without_skill/outputs/`.
+
+Running both shows whether the skill actually adds value vs what Claude can do on its own.
+
+While runs execute, write an `eval_metadata.json` for each test case:
+```json
+{
+  "eval_id": 1,
+  "eval_name": "descriptive-name",
+  "prompt": "The user's task prompt",
+  "assertions": ["assertion 1", "assertion 2"]
+}
+```
+
+When each subagent completes, capture timing data from the task notification (`total_tokens`, `duration_ms`) and save to `timing.json` in the run directory. This data is only available at notification time.
+
+### 4. Grade and Review
+
+Once all runs complete:
+
+**Grade**: For each run, use the grader agent protocol from `docs/knowledge/anthropic-skill-creator/agents/grader.md`. The grader evaluates each assertion against the outputs, extracts and verifies claims, and critiques the assertions themselves. Save results to `grading.json`.
+
+For assertions that can be checked programmatically (file exists, contains expected string, valid JSON), write and run a script instead of having the grader eyeball it.
+
+**Aggregate**: Run the benchmark aggregation:
+```bash
+python -m scripts.aggregate_benchmark {workspace}/iteration-1 --skill-name {name}
+```
+(Run from the `docs/knowledge/anthropic-skill-creator/` directory.)
+
+This produces `benchmark.json` with pass_rate, time, and tokens for each configuration (with_skill vs without_skill), including mean ± stddev.
+
+**Analyze**: Review benchmark data for patterns the aggregate stats might hide. See `docs/knowledge/anthropic-skill-creator/agents/analyzer.md` for what to look for — non-discriminating assertions, high-variance evals, time/token tradeoffs.
+
+**Launch the viewer**:
+```bash
+python docs/knowledge/anthropic-skill-creator/eval-viewer/generate_review.py \
+  {workspace}/iteration-1 \
+  --skill-name "{name}" \
+  --benchmark {workspace}/iteration-1/benchmark.json
+```
+
+The viewer has two tabs:
+- Outputs: browse each test case, see the output, leave feedback
+- Benchmark: quantitative comparison between with-skill and baseline
+
+Tell the user to review and come back when done.
+
+### 5. Improve and Re-run
+
+Read `feedback.json` from the viewer. Empty feedback means the output was fine. Focus on test cases where the user had complaints.
+
+When improving the skill based on feedback:
+- Generalize from the examples — the skill will be used on many prompts, not just these
+- Read the transcripts, not just outputs — if Claude wasted time on unproductive steps, trim the instructions causing it
+- Explain *why* behind instructions rather than rigid MUSTs
+
+Re-run all test cases into `iteration-2/`, including baselines. For iteration 2+, pass `--previous-workspace` to the viewer so the user can compare versions.
+
+Loop until the user is satisfied or feedback is all empty.
+
+**Blind A/B comparison (optional)**: If you've iterated a few times and it's unclear whether the latest version is actually better, offer a blind comparison. This gives two outputs to an independent judge without revealing which version produced them. The judge scores on a rubric (correctness, completeness, organization, usability) and picks a winner. Then an analyzer explains *why* the winner won and suggests targeted improvements.
+
+This is worth the extra time when improvement is ambiguous. Skip it when regular evals already show clear direction.
+
+Protocol: `docs/knowledge/anthropic-skill-creator/agents/comparator.md` and `docs/knowledge/anthropic-skill-creator/agents/analyzer.md`.
+
+### 6. Optimize Description (optional)
+
+After the skill's quality is solid, offer to optimize the description for better triggering accuracy. The description is what Claude uses to decide whether to activate the skill.
+
+**Generate trigger eval queries**: Create 20 queries — a mix of should-trigger (8-10) and should-not-trigger (8-10).
+
+Should-trigger queries: different phrasings of the same intent, casual and formal, some where the user doesn't name the skill but clearly needs it.
+
+Should-not-trigger queries: near-misses that share keywords but need something different. These are the valuable ones. `"Write a fibonacci function"` as a negative test for a PDF skill is too easy. Better: a query that touches on a related domain but actually needs a different tool.
+
+All queries should be realistic — include file paths, personal context, abbreviations, typos, mixed case. Not abstract one-liners.
+
+**Review with user**: Present the queries for review. The user can edit, add, remove, toggle should/shouldn't trigger.
+
+**Run optimization**: The optimization loop splits queries 60% train / 40% held-out test, evaluates the current description (3 runs per query), proposes improvements using extended thinking, and iterates up to 5 times:
+
+```bash
+python -m scripts.run_loop \
+  --eval-set {path-to-trigger-eval.json} \
+  --skill-path {path-to-skill} \
+  --model {model-id} \
+  --max-iterations 5 \
+  --verbose
+```
+(Run from the `docs/knowledge/anthropic-skill-creator/` directory.)
+
+Best description is selected by test score (not train score) to avoid overfitting.
+
+**Apply**: Update the skill's SKILL.md frontmatter with the best description. Show the user before/after with scores.
+
+## Output
+
+Eval files are saved inside the skill directory:
+```
+skill-name/
+  SKILL.md
+  evals/
+    evals.json
+    files/        (input files for testing, if needed)
+  ...
+```
+
+Workspace directories (`{skill-name}-workspace/`) are working artifacts — they can be deleted after iteration is complete.

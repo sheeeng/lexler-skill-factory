@@ -148,7 +148,10 @@ Tell user to restart Claude Code to load the skill.
 - Skill doesn't trigger → improve description with better trigger words
 - Claude misses steps → make instructions more prominent
 - Too verbose → remove what Claude already knows
-Note any other issues and think broader. Read the skill documentation again, then read the skill definition, suggest improvements based on the issues seen. 
+Note any other issues and think broader. Read the skill documentation again, then read the skill definition, suggest improvements based on the issues seen.
+
+### 13. Evaluate (optional)
+Ask the user if they'd like to create evals for this skill. Explain that evals are realistic test prompts paired with assertions about expected output — they measure whether the skill actually improves Claude's behavior compared to baseline, track quality across iterations, and catch regressions. If yes, follow `docs/create_evals-process.md`.
 
 ## Output
 Save completed skill to `output_skills/[category]/[skill-name]/SKILL.md`.
