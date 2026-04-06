@@ -56,5 +56,24 @@
         "Final evaluation reviews for missing edge cases"
       ]
     }
+    },
+    {
+      "id": 4,
+      "prompt": "Build a tennis game scorer in Python. Track points for two players. Use traditional tennis scoring (0, 15, 30, 40). Handle deuce (both at 40) and advantage rules. The game ends when a player wins. Provide a method that returns the current score as a string like '15-30' or 'Deuce' or 'Advantage Player 1' or 'Player 2 wins'.",
+      "expected_output": "A tennis scorer built through TDD with tests covering normal scoring, deuce, advantage, and win conditions",
+      "files": [],
+      "expectations": [
+        "Test plan covers normal scoring progression before deuce/advantage scenarios",
+        "ZOMBIES is walked through explicitly — zero (initial score), one (first point), many (multiple points), boundary (40-40 transition to deuce), exceptions (scoring after game is won)",
+        "Deuce logic is NOT implemented until a test forces it — early tests use hardcoded or simple score tracking",
+        "The transition from normal scoring to deuce scoring emerges through tests, not upfront design",
+        "Advantage and win-from-advantage are separate test cases, not lumped together",
+        "Claude predicts failures before running each test",
+        "A meaningful refactoring occurs — the scoring logic should evolve from simple to complex as tests demand it",
+        "Scoring after a game is won is handled (either raises error or is tested)",
+        "Final code correctly handles: normal points, deuce, advantage, win from advantage, win from 40-0/15/30",
+        "All tests run after every change"
+      ]
+    }
   ]
 }

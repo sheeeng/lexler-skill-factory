@@ -60,13 +60,15 @@ The grader agent will also critique weak assertions and suggest improvements, so
 
 ### 3. Run Quality Evals
 
-For each test prompt, spawn two subagents in the same turn:
+For each test prompt, run **3 instances per configuration** in parallel. AI is non-deterministic — a single run can be an outlier. Multiple runs let you compare distributions, not data points.
 
-**With-skill run**: Claude has access to the skill and executes the test prompt. Save outputs to `workspace/{category}/{skill-name}/iteration-1/eval-{ID}/with_skill/outputs/`.
+For each test prompt, spawn 3 with-skill and 3 baseline subagents (6 total per prompt, all in parallel):
 
-**Baseline run**: Same prompt, no skill loaded. Save to `workspace/{category}/{skill-name}/iteration-1/eval-{ID}/without_skill/outputs/`.
+**With-skill runs**: Claude has access to the skill and executes the test prompt. Save outputs to `workspace/{category}/{skill-name}/iteration-1/eval-{ID}/with_skill/run-{N}/outputs/`.
 
-Running both shows whether the skill actually adds value vs what Claude can do on its own.
+**Baseline runs**: Same prompt, no skill loaded. Save to `workspace/{category}/{skill-name}/iteration-1/eval-{ID}/without_skill/run-{N}/outputs/`.
+
+Running both shows whether the skill actually adds value vs what Claude can do on its own. Running 3 each shows whether that value is consistent or just lucky.
 
 While runs execute, write an `eval_metadata.json` for each test case:
 ```json
