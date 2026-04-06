@@ -60,15 +60,23 @@ The grader agent will also critique weak assertions and suggest improvements, so
 
 ### 3. Run Quality Evals
 
-For each test prompt, run **3 instances per configuration** in parallel. AI is non-deterministic — a single run can be an outlier. Multiple runs let you compare distributions, not data points.
+AI is non-deterministic — a single run can be an outlier. Multiple runs let you compare distributions, not data points. Ask the user how many runs per configuration:
+- Quick (1 run each, 2 agents per prompt) — fast and cheap, good for early iterations when you're still shaping the skill
+- Standard (3 runs each, 6 agents per prompt) — reliable signal, catches outliers
+- Thorough (5 runs each, 10 agents per prompt) — high confidence, good for final validation before shipping
+- Custom — user picks the number
 
-For each test prompt, spawn 3 with-skill and 3 baseline subagents (6 total per prompt, all in parallel):
+Spawn all runs in parallel.
 
-**With-skill runs**: Claude has access to the skill and executes the test prompt. Save outputs to `workspace/{category}/{skill-name}/iteration-1/eval-{ID}/with_skill/run-{N}/outputs/`.
+**With-skill runs**: Tell the agent to read the skill first, then execute the task. Include:
+- The skill path
+- The task prompt
+- The output directory: `workspace/{category}/{skill-name}/iteration-1/eval-{ID}/with_skill/run-{N}/outputs/`
+- A request to save a transcript (every step, test, prediction, refactoring) to `transcript.md` in the run directory — the grader needs this
 
-**Baseline runs**: Same prompt, no skill loaded. Save to `workspace/{category}/{skill-name}/iteration-1/eval-{ID}/without_skill/run-{N}/outputs/`.
+**Baseline runs**: Same task prompt but explicitly tell the agent NOT to read any skill files. Save to `workspace/{category}/{skill-name}/iteration-1/eval-{ID}/without_skill/run-{N}/outputs/`. Also request a transcript.
 
-Running both shows whether the skill actually adds value vs what Claude can do on its own. Running 3 each shows whether that value is consistent or just lucky.
+Running both shows whether the skill actually adds value vs what Claude can do on its own. Multiple runs show whether that value is consistent or just lucky.
 
 While runs execute, write an `eval_metadata.json` for each test case:
 ```json
