@@ -2,131 +2,124 @@
 
 For inline diagrams in code, commit messages, terminal output, or anywhere rich rendering isn't available.
 
-There is no standard ASCII format for C4. These conventions produce readable diagrams in monospace text.
+There is no standard ASCII format for C4. These conventions prioritize readability over decoration.
 
-## Element Notation
+## Core Principle
 
-People:
-```
-  O
- /|\   Customer
- / \
-```
+ASCII diagrams are structured text with visual hints, not pixel art. Keep them simple.
 
-Or simplified:
-```
-[Customer]
-```
+## Elements
 
-Software systems and containers as labeled boxes:
+Boxes with corners. Name on the first line, technology in brackets on the second:
+
 ```
-┌──────────────────────┐
-│   Banking System     │
-│   (Software System)  │
-└──────────────────────┘
+┌──────────────────┐
+│ API Application  │
+│ [Spring Boot]    │
+└──────────────────┘
 ```
 
-With technology:
-```
-┌──────────────────────┐
-│   API Application    │
-│   [Spring Boot]      │
-└──────────────────────┘
-```
+People as simple labels in parentheses:
 
-Databases as cylinders or labeled boxes:
 ```
-┌──────────────────────┐
-│   Database           │
-│   [PostgreSQL]       │
-│   (datastore)        │
-└──────────────────────┘
+(Customer)
 ```
 
 ## Relationships
 
-Use arrows with labels:
+Horizontal: `──>`
+Vertical: `│` with `v` or `^` at the end
+Labels on a separate line next to the arrow:
+
 ```
-──────────────>   directional
-── "label" ──>    with description
-<─────────────>   bidirectional
+(Customer)
+    │
+    │  manages accounts
+    v
+┌──────────────────┐
+│ Banking System   │
+└──────────────────┘
 ```
 
-## System Boundary
+## System Boundaries
 
-Use a dashed or double-line box:
+A boundary box wrapping its containers. Every line within the box must be the same character width — verify this after drawing.
+
 ```
-┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
-  Internet Banking System
-│                                       │
-  ┌──────────┐    ┌──────────────────┐
-│ │ Web App  │    │ API Application  │  │
-  │ [React]  │───>│ [Spring Boot]   │
-│ └──────────┘    └────────┬─────────┘  │
-                           │
-│                          ▼            │
-                  ┌──────────────────┐
-│                 │ Database         │  │
-                  │ [PostgreSQL]     │
-│                 └──────────────────┘  │
-└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘
+┌────────────────────────────────────────────┐
+│ Internet Banking System                    │
+│                                            │
+│  ┌──────────┐   ┌────────┐   ┌──────────┐  │
+│  │ Web App  │──>│ SPA    │──>│ API      │  │
+│  │ [Spring] │   │ [React]│   │ [Spring] │  │
+│  └──────────┘   └────────┘   └────┬─────┘  │
+│                                   │        │
+│                                   v        │
+│                            ┌──────────┐    │
+│                            │ Database │    │
+│                            │[Postgres]│    │
+│                            └──────────┘    │
+└────────────────────────────────────────────┘
 ```
 
 ## Complete System Context Example
 
 ```
-                    [Customer]
-                        │
-                        │ manages accounts
-                        ▼
-           ┌────────────────────────┐
-           │    Internet Banking    │
-           │    System              │
-           └───────────┬────────────┘
-              ┌────────┼────────┐
-              │                 │
-              ▼                 ▼
-┌──────────────────┐  ┌──────────────────┐
-│ Mainframe        │  │ Email System     │
-│ Banking System   │  │                  │
-└──────────────────┘  └──────────────────┘
+                  (Customer)
+                      │
+               manages accounts
+                      │
+                      v
+             ┌────────────────┐
+             │ Internet       │
+             │ Banking System │
+             └───────┬────────┘
+                     │
+            ┌────────┴────────┐
+            │                 │
+            v                 v
+   ┌─────────────────┐  ┌───────────────┐
+   │ Mainframe       │  │ Email System  │
+   │ Banking System  │  │               │
+   └─────────────────┘  └───────────────┘
 ```
 
 ## Complete Container Example
 
 ```
-                         [Customer]
-                          │     │
-               visits     │     │  manages accounts
-                          ▼     ▼
-┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
-  Internet Banking System
-│                                                   │
-  ┌────────────┐   ┌───────────┐   ┌────────────┐
-│ │ Web App    │──>│ SPA       │──>│ API        │  │
-  │ [Spring]   │   │ [React]   │   │ [Spring]   │
-│ └────────────┘   └───────────┘   └─────┬──────┘  │
-                                         │
-│                                        ▼         │
-                                ┌──────────────┐
-│                               │ Database     │   │
-                                │ [PostgreSQL] │
-│                               └──────────────┘   │
-└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘
-          │                          │
-          ▼                          ▼
-┌──────────────────┐    ┌──────────────────┐
-│ Mainframe        │    │ Email System     │
-│ Banking System   │    │                  │
-└──────────────────┘    └──────────────────┘
+                       (Customer)
+                        │     │
+             visits     │     │  manages accounts
+                        v     v
+┌─────────────────────────────────────────────────────┐
+│ Internet Banking System                             │
+│                                                     │
+│  ┌──────────┐    ┌─────────┐    ┌────────────────┐  │
+│  │ Web App  │───>│ SPA     │───>│ API            │  │
+│  │ [Spring] │    │ [React] │    │ [Spring Boot]  │  │
+│  └──────────┘    └─────────┘    └───────┬────────┘  │
+│                                         │           │
+│                                         v           │
+│                                  ┌────────────┐     │
+│                                  │ Database   │     │
+│                                  │ [Postgres] │     │
+│                                  └────────────┘     │
+└─────────────────────────────────────────────────────┘
+                  │                    │
+                  v                    v
+        ┌─────────────────┐   ┌───────────────┐
+        │ Mainframe       │   │ Email System  │
+        │ Banking System  │   │               │
+        └─────────────────┘   └───────────────┘
 ```
 
 ## Guidelines
 
-- Use box-drawing characters (┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼) for clean lines
-- Fall back to +, -, |, and = if box-drawing characters aren't available
-- Keep diagrams under ~80 columns wide when possible
-- Vertical flow (top to bottom) is easiest to read in terminals
-- Label relationships on or near the arrow lines
-- Use brackets for technology: `[PostgreSQL]`, `[React]`
-- Use parentheses for element type: `(datastore)`, `(external)`
+- Use box-drawing characters: `┌`, `┐`, `└`, `┘` for corners, `─` for horizontal, `│` for vertical
+- Use `──>` for horizontal arrows, `│` with `v` for vertical arrows
+- After drawing a diagram, pipe it through `uv run scripts/check_ascii_alignment.py` to verify all boxes are aligned. Fix any issues before presenting the diagram.
+- Put relationship labels on a separate line next to the arrow, not inline
+- Use brackets for technology: `[Postgres]`, `[React]`
+- Use parentheses for people: `(Customer)`, `(Admin)`
+- Choose the layout direction (vertical or horizontal) that best fits the relationships being shown
+- When a diagram gets too complex, simplify — drop less important relationships or split into multiple diagrams

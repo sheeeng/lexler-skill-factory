@@ -97,6 +97,8 @@ Read the relevant reference before generating output in that format.
 
 When generating Structurizr DSL, produce a complete `workspace.dsl` file that the user can paste into playground.structurizr.com to see the rendered diagram immediately.
 
+When generating ASCII diagrams, pipe the output through `uv run scripts/check_ascii_alignment.py` to verify box alignment before presenting. Misaligned right walls are the most common mistake in ASCII diagrams.
+
 ## Source Documentation
 
 - [C4 Model — Diagrams overview](https://c4model.com/diagrams)
