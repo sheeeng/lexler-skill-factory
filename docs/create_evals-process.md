@@ -60,10 +60,10 @@ The grader agent will also critique weak assertions and suggest improvements, so
 
 ### 3. Run Quality Evals
 
-AI is non-deterministic — a single run can be an outlier. Multiple runs let you compare distributions, not data points. Ask the user how many runs per configuration:
-- Quick (1 run each, 2 agents per prompt) — fast and cheap, good for early iterations when you're still shaping the skill
-- Standard (3 runs each, 6 agents per prompt) — reliable signal, catches outliers
-- Thorough (5 runs each, 10 agents per prompt) — high confidence, good for final validation before shipping
+AI is non-deterministic — a single run can be an outlier. Multiple runs let you compare distributions, not data points. Use AskUserQuestion to ask the user how many runs per configuration, with these options:
+- Quick (1 run each, 2 agents per prompt) — fast, lowest token cost, good for early iterations
+- Standard (3 runs each, 6 agents per prompt) — reliable signal, moderate token cost
+- Thorough (5 runs each, 10 agents per prompt) — high confidence, highest token cost
 - Custom — user picks the number
 
 Spawn all runs in parallel.
@@ -78,12 +78,12 @@ Spawn all runs in parallel.
 
 Running both shows whether the skill actually adds value vs what Claude can do on its own. Multiple runs show whether that value is consistent or just lucky.
 
-While runs execute, write an `eval_metadata.json` in each eval directory (e.g., `{skill-name}-workspace/iteration-1/eval-{ID}/eval_metadata.json`). The viewer uses this to display the prompt — without it, the prompt shows as "(No prompt found)":
+Before spawning runs, write an `eval_metadata.json` in each eval directory (e.g., `{skill-name}-workspace/iteration-1/eval-{ID}/eval_metadata.json`). The eval viewer reads this file to display the prompt — without it, the viewer shows "(No prompt found)" and the results are hard to review:
 ```json
 {
   "eval_id": 1,
   "eval_name": "descriptive-name",
-  "prompt": "The user's task prompt",
+  "prompt": "The exact task prompt given to the agent",
   "assertions": ["assertion 1", "assertion 2"]
 }
 ```
