@@ -102,15 +102,18 @@ After creating any diagram, verify:
 
 **Deployment details in Container diagrams** — clustering, load balancers, replication belong in Deployment diagrams, not Container diagrams.
 
-## Generating from Code
+## Workflows
 
-When analyzing an existing codebase to generate diagrams:
+### From Existing Code
 
-- Start at System Context level, then zoom in
-- Identify system boundaries first (what's in scope vs external)
-- For large systems, create multiple focused views rather than one giant diagram
-- Group containers by domain area or deployment unit
-- Verify the diagram against actual code structure — don't guess at relationships
+When analyzing a codebase to generate diagrams:
+
+1. Explore the codebase to identify the system boundary, external dependencies, and internal structure
+2. Start at System Context level — identify users and external systems
+3. Zoom into Container level — identify deployable units, data stores, and inter-container communication
+4. Ask the user if deeper levels (Component, Code) are needed before going further
+5. For large systems, create multiple focused views by domain area or user journey rather than one giant diagram
+6. Verify the diagram against actual code — don't guess at relationships
 
 **Recognizing C4 elements in code:**
 - Separately deployed processes, services, or apps → Containers
@@ -119,8 +122,23 @@ When analyzing an existing codebase to generate diagrams:
 - External APIs, third-party SaaS, systems you don't control → External Software Systems
 - A monolith is one Container with many Components inside — don't split it into multiple Containers unless the parts deploy independently
 
-**After the first draft, review:**
+### From Designs Being Planned
+
+When the user wants to work through architecture for a system that doesn't exist yet — or only partially exists — first figure out where they are in the design process:
+
+1. Look for existing design artifacts before asking. Check `docs/`, `architecture/`, `design/`, ADRs, RFCs, README files, anywhere design might already be captured. If you find them, read them and base the diagrams on what's there.
+2. If partial designs exist, draft diagrams from them and ask the user only about gaps.
+3. If no design exists, interview the user: what is the system, who uses it, what does it integrate with, what are the major moving parts.
+4. Draft a System Context diagram and validate with the user before going deeper
+5. Discuss containers — what tech, what responsibilities, how they communicate
+6. Draft a Container diagram
+7. Go deeper only if the user wants to explore a specific container's internals
+
+The diagrams are a tool for thinking, not just documentation. Surface architectural decisions as you draft — "I'm assuming the queue decouples ingestion from processing — is that intentional?" — rather than just transcribing what the user said.
+
+### After the First Draft
+
 - Does any single view have too many elements? Split by domain area or user journey
 - Are the abstraction levels consistent? Don't mix containers and components in one diagram
-- Are relationship labels specific to what the code actually does, or are they vague?
-- Would someone unfamiliar with the codebase understand the diagram without narration?
+- Are relationship labels specific or vague?
+- Would someone unfamiliar with the system understand the diagram without narration?
