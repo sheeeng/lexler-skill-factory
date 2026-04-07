@@ -54,3 +54,5 @@ Deployment nodes can nest: a physical server contains a VM, which contains a Doc
 - Create separate diagrams per environment when they differ significantly
 - Use provider-specific icons (AWS, Azure, GCP) to make nodes recognizable — but explain them in the legend
 - Show instance counts and scaling ranges where they matter
+
+Source: https://c4model.com/diagrams/deployment

@@ -36,3 +36,5 @@ Everyone — technical and non-technical. This is the diagram you show stakehold
 - Using a single "User" when there are meaningfully different roles (admin vs customer vs support agent)
 - Forgetting to show systems that depend ON yours, not just systems yours depends on
 - Labeling relationships as just "Uses" instead of describing the actual interaction
+
+Source: https://c4model.com/diagrams/system-context

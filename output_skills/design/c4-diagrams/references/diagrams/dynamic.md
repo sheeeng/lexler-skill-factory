@@ -46,3 +46,5 @@ Use sparingly. Create Dynamic diagrams for:
 - Onboarding material for non-obvious behavior
 
 Don't create one for every endpoint or feature — only when the dynamic view adds understanding that the static diagrams don't convey.
+
+Source: https://c4model.com/diagrams/dynamic

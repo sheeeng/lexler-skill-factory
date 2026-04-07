@@ -39,3 +39,5 @@ A System Context diagram focuses on ONE system and shows what surrounds it. A Sy
 - As a bridge to enterprise architecture discussions
 - When planning cross-system initiatives or migrations
 - To identify duplication or integration opportunities across systems
+
+Source: https://c4model.com/diagrams/system-landscape

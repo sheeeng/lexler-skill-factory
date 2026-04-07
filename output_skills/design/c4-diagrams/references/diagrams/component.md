@@ -47,3 +47,5 @@ Only when it adds value. The C4 model explicitly says: don't create component di
 - You need to understand dependencies between modules
 
 For long-lived documentation, consider automating generation from code.
+
+Source: https://c4model.com/diagrams/component

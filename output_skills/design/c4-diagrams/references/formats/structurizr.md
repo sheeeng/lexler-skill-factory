@@ -295,3 +295,5 @@ workspace "Internet Banking" "An example workspace" {
 ```
 
 Paste into structurizr.com/dsl to visualize.
+
+Source: https://docs.structurizr.com/dsl/language

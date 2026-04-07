@@ -221,3 +221,5 @@ Mermaid's C4 support does not include:
 - Legends (must be implied through consistent naming)
 
 Layout control is limited — use `UpdateLayoutConfig` and directional `Rel_` hints for rough positioning, but expect less control than Structurizr.
+
+Source: https://mermaid.js.org/syntax/c4.html

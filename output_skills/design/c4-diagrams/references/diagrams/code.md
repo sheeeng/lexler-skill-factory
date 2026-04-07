@@ -49,3 +49,5 @@ Mix styles when a component spans both concerns.
 - Showing every attribute and method — filter to what tells the story
 - Trying to diagram an entire container at code level — stay focused on one component
 - Including implementation details that change frequently (private methods, internal state) unless they're the point of the diagram
+
+Source: https://c4model.com/diagrams/code

@@ -49,3 +49,5 @@ NOT Docker containers (though a Docker container might host a C4 container).
 - Missing protocol labels on inter-container relationships
 - Making it too big — if you have 20+ containers, split into focused views by domain or user journey
 - Confusing containers with components — if it's not separately deployable, it's probably a component
+
+Source: https://c4model.com/diagrams/container
