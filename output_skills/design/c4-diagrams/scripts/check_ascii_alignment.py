@@ -37,6 +37,11 @@ def extract_from_markdown(lines):
     return diagrams
 
 
+def is_dashed_border(line, left_col, right_col):
+    segment = line[left_col:right_col + 1]
+    return ' ─' in segment or '─ ' in segment
+
+
 def find_boxes(diagram_lines):
     boxes = []
     used_closes = set()
@@ -46,11 +51,11 @@ def find_boxes(diagram_lines):
                 close_col = line.find('┐', col + 1)
                 if close_col == -1:
                     continue
-                expected_width = close_col - col + 1
+                dashed = is_dashed_border(line, col, close_col)
                 close_line = find_closing_line(diagram_lines, i, col, used_closes)
                 if close_line is not None:
                     used_closes.add((close_line, col))
-                    boxes.append((line_no, i, col, close_col, close_line))
+                    boxes.append((line_no, i, col, close_col, close_line, dashed))
     return boxes
 
 
@@ -62,7 +67,9 @@ def find_closing_line(diagram_lines, open_idx, left_col, used_closes):
     return None
 
 
-def check_box(diagram_lines, open_idx, left_col, right_col, close_idx):
+def check_box(diagram_lines, open_idx, left_col, right_col, close_idx, dashed):
+    if dashed:
+        return []
     issues = []
     for j in range(open_idx + 1, close_idx):
         line_no, line = diagram_lines[j]
@@ -93,9 +100,9 @@ def check_text(text):
 
     for diagram_lines in diagrams:
         boxes = find_boxes(diagram_lines)
-        for line_no, open_idx, left_col, right_col, close_idx in boxes:
+        for line_no, open_idx, left_col, right_col, close_idx, dashed in boxes:
             all_issues.extend(
-                check_box(diagram_lines, open_idx, left_col, right_col, close_idx)
+                check_box(diagram_lines, open_idx, left_col, right_col, close_idx, dashed)
             )
 
     if all_issues:
