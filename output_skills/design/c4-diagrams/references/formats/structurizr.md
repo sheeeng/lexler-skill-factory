@@ -83,7 +83,7 @@ Between named elements:
 
 ```
 spa -> api "Makes API calls to" "JSON/HTTPS"
-api -> db "Reads from and writes to" "JDBC"
+api -> db "Reads account balances from and writes transactions to" "JDBC"
 api -> mainframe "Gets account info from" "XML/HTTPS"
 api -> email "Sends email using" "SMTP"
 ```
@@ -245,7 +245,7 @@ workspace "Internet Banking" "An example workspace" {
         
         customer -> spa "Manages accounts using"
         spa -> api "Makes API calls to" "JSON/HTTPS"
-        api -> db "Reads from and writes to" "JDBC"
+        api -> db "Reads account balances from and writes transactions to" "JDBC"
         api -> mainframe "Gets account data from" "XML/HTTPS"
         api -> email "Sends notifications via" "SMTP"
     }

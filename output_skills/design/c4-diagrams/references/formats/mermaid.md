@@ -170,7 +170,7 @@ C4Container
 
     Rel(customer, spa, "Manages accounts using", "HTTPS")
     Rel(spa, api, "Makes API calls to", "JSON/HTTPS")
-    Rel(api, db, "Reads/writes", "JDBC")
+    Rel(api, db, "Reads account balances from and writes transactions to", "JDBC")
     Rel(api, mainframe, "Gets account data from", "XML/HTTPS")
     Rel(api, email, "Sends notifications via", "SMTP")
 ```
@@ -207,7 +207,7 @@ C4Deployment
     }
 
     Rel(spa, api, "Makes API calls to", "JSON/HTTPS")
-    Rel(api, db, "Reads/writes", "JDBC")
+    Rel(api, db, "Reads account data from and persists changes to", "JDBC")
 ```
 
 ## Limitations
